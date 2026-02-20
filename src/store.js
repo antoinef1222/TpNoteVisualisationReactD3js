@@ -1,6 +1,8 @@
 import { configureStore } from '@reduxjs/toolkit'
 import dataSetReducer from './redux/DataSetSlice'
 import itemInteractionReducer from './redux/ItemInteractionSlice'
+import labelInteractionReducer from './redux/LabelInteractionSlice'
+import hierarchyInteractionReducer from './redux/HierarchyInteraction'
 
 /**
  * Exportation du store
@@ -10,5 +12,7 @@ export default configureStore({
   reducer: {
     dataSet: dataSetReducer,
     itemInteraction: itemInteractionReducer,
+    labelInteraction: labelInteractionReducer,
+    hierarchyInteraction: hierarchyInteractionReducer
   }
 })

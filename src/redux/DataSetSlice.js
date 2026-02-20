@@ -71,4 +71,4 @@ export const dataSetSlice = createSlice({
 });
 
 // Exploration du state sous la forme de reducer
-export default dataSetSlice.reducer
+export default dataSetSlice.reducer;

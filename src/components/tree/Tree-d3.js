@@ -9,7 +9,7 @@ class ScatterplotD3 {
 
     // --- VARIABLES ---
 
-    margin = {top: 75, right: 75, bottom: 75, left: 75};
+    margin = {top: 100, right: 10, bottom: 50, left: 100};
     size;
     height;
     width;
@@ -164,17 +164,17 @@ class ScatterplotD3 {
 
     /**
      * Mise à jour des axes du graphe
-     * @param {*} scatterplotData Liste des données
+     * @param {*} visData Liste des données
      * @param {*} xAttribute Attribut sur l'axe des x
      * @param {*} yAttribute Attribut sur l'axe des y
      */
-    updateAxis(scatterplotData, xAttribute, yAttribute){
+    updateAxis(visData, xAttribute, yAttribute){
 
         // Sélection d'u nminimum est d'un maximum pour définir l'échelle
-        const minX = d3.min(scatterplotData.map(item => item[xAttribute]))
-        const maxX = d3.max(scatterplotData.map(item => item[xAttribute]))
-        const minY = d3.min(scatterplotData.map(item => item[yAttribute]))
-        const maxY = d3.max(scatterplotData.map(item => item[yAttribute]))
+        const minX = d3.min(visData.map(item => item[xAttribute]))
+        const maxX = d3.max(visData.map(item => item[xAttribute]))
+        const minY = d3.min(visData.map(item => item[yAttribute]))
+        const maxY = d3.max(visData.map(item => item[yAttribute]))
         this.xScale.domain([minX,maxX]);
         this.yScale.domain([minY,maxY]);
 
@@ -203,16 +203,16 @@ class ScatterplotD3 {
 
     /**
      * Application des informations et des évènement du graphe
-     * @param {*} scatterplotData 
+     * @param {*} visData 
      * @param {*} xAttribute 
      * @param {*} yAttribute 
      * @param {*} controllerMethods 
      */
-    renderScatterplot(scatterplotData, xAttribute, yAttribute, controllerMethods){
+    renderScatterplot(visData, xAttribute, yAttribute, controllerMethods){
         console.log("render scatterplot with a new data list ...")
 
         // Modifcation des échelles des axes x et y à partir des données
-        this.updateAxis(scatterplotData, xAttribute, yAttribute);
+        this.updateAxis(visData, xAttribute, yAttribute);
 
         /**
          * Pour chaque données du graphe, on associe les nouvelles données aux points existants :
@@ -221,7 +221,7 @@ class ScatterplotD3 {
          * - Sinon, c'est qu'il n'existe plus, auquel cas on le supprime du graphe
          */
         this.svg.selectAll(".markerG")
-            .data(scatterplotData, (itemData) => itemData.index)
+            .data(visData, (itemData) => itemData.index)
             .join(
                 enter => {
                     // Création d'un point

@@ -22,13 +22,13 @@ export const itemInteractionSlice = createSlice({
      * Modification de l'item sélectionné
      */
     setSelectedItems: (state, action) => {
-      state.selectedItems = action.payload
+      state.selectedItems = action.payload;
     },
   },
 });
 
 // Exportation de la fonction de sélection
-export const { setSelectedItems } = itemInteractionSlice.actions
+export const { setSelectedItems } = itemInteractionSlice.actions;
 
 // Exploration du state sous la forme de reducer
-export default itemInteractionSlice.reducer
+export default itemInteractionSlice.reducer;

@@ -3,7 +3,6 @@ import { useEffect, useRef } from 'react';
 import {useSelector, useDispatch} from 'react-redux'
 import ScatterplotD3 from './Scatterplot-d3';
 import { setSelectedItems } from '../../redux/ItemInteractionSlice'
-import { MapperHierarchy } from '../../utils/MapperHierarchy';
 
 
 /**
@@ -11,7 +10,7 @@ import { MapperHierarchy } from '../../utils/MapperHierarchy';
  * @param {*} param0 Objet {string, string} indiquant les données sur l'axe des x et sur l'axe des y / Attention, il faut que les labels correspondent à une colonne du tableau de données
  * @returns Renvoie un nuage de point
  */
-function ScatterplotContainer(){
+function ScatterplotContainer({xAttributeName, yAttributeName}){
 
     // --- VARIABLES ---
 
@@ -19,23 +18,13 @@ function ScatterplotContainer(){
      * Variable d'écoute sur le changement des données
      * Elle permet de mettre à jour le graphe dès que les données sont modifiées
      */
-    const scatterplotData = useSelector(state => state.dataSet);
-    console.log(MapperHierarchy.mapDataToHierarchy(scatterplotData));
+    const scatterplotData = useSelector(state =>state.dataSet)
 
     /**
      * Variable d'écoute sur la sélection
      * Elle permet de mettre à jour le graphe dès que des données sont sélectionnées
      */
     const selectedItems = useSelector(state => state.itemInteraction.selectedItems);
-
-    // Récupération de la liste des labels depuis le store
-    const dropdownLabelValues = useSelector(state => state.labelInteraction.labels);
-    
-    // Récupération de l'index du label x
-    const xLabelValue = useSelector(state => state.labelInteraction.xLabel);
-    
-    // Récupération de l'index du label y
-    const yLabelValue = useSelector(state => state.labelInteraction.yLabel);
 
     // Récupération des données du store
     const dispatch = useDispatch();
@@ -132,11 +121,11 @@ function ScatterplotContainer(){
         const scatterplotD3 = scatterplotD3Ref.current;
 
         // Mise à jour du graphe
-        scatterplotD3.renderScatterplot(scatterplotData, dropdownLabelValues[xLabelValue], dropdownLabelValues[yLabelValue], {
+        scatterplotD3.renderScatterplot(scatterplotData, xAttributeName, yAttributeName, {
             handleOnClick,
             handleSelection
         });
-    },[scatterplotData, xLabelValue, yLabelValue, dropdownLabelValues, dispatch]);
+    },[scatterplotData, xAttributeName, yAttributeName, dispatch]);
 
 
     /**
@@ -154,7 +143,7 @@ function ScatterplotContainer(){
 
     // Affichage du graphe et de son conteneur
     return(
-        <div ref={divContainerRef} className="scatterplotDivContainer col2"></div>
+        <div ref={divContainerRef} className="treeDivContainer col2"></div>
     )
 }
 

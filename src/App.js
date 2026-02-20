@@ -3,7 +3,11 @@ import { useEffect} from 'react';
 import { useDispatch } from 'react-redux'
 import { getDataSet } from './redux/DataSetSlice'
 import ScatterplotContainer from './components/scatterplot/ScatterplotContainer';
+import DropdownXLabel from './components/dropdown/DropdownXLabel';
+import DropdownYLabel from './components/dropdown/DropdownYLabel';
+import DropdownHierarchy from './components/dropdown/DropdownHierarchy';
 
+        
 /**
  * Composant principale de l'application
  * Dans celui-ci, on récupère les données et des csv et on affiche l'ensemble des graphes
@@ -44,15 +48,18 @@ function App() {
    */
   return (
     <div className="App">
-        <div id={"MultiviewContainer"} className={"row"}>
-          {/*<ScatterplotContainer xAttributeName={"Temperature"} yAttributeName={"RentedBikeCount"}/>
-          <ScatterplotContainer xAttributeName={"Humidity"} yAttributeName={"RentedBikeCount"}/>*/}
-          <ScatterplotContainer xAttributeName={"population"} yAttributeName={"ViolentCrimesPerPop"}/>
-          <ScatterplotContainer xAttributeName={"medIncome"} yAttributeName={"ViolentCrimesPerPop"}/>
-        </div>
+      <div className='dropdown-menu'>
+        <DropdownXLabel></DropdownXLabel>
+        <DropdownYLabel></DropdownYLabel>
+        <DropdownHierarchy></DropdownHierarchy>
+      </div>
+
+      <div id={"MultiviewContainer"} className={"row"}>
+        <ScatterplotContainer/>
+        <ScatterplotContainer/>
+      </div>
     </div>
   );
 }
 
 export default App;
-
