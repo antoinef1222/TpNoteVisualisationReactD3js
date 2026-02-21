@@ -1,11 +1,13 @@
 import './App.css';
-import { useEffect} from 'react';
-import { useDispatch } from 'react-redux'
+import { useEffect, useState} from 'react';
+import { useDispatch, useSelector } from 'react-redux'
 import { getDataSet } from './redux/DataSetSlice'
 import ScatterplotContainer from './components/scatterplot/ScatterplotContainer';
 import DropdownXLabel from './components/dropdown/DropdownXLabel';
 import DropdownYLabel from './components/dropdown/DropdownYLabel';
 import DropdownHierarchy from './components/dropdown/DropdownHierarchy';
+import TreeContainer from './components/treeCluster/TreeContainer';
+import ClusterContainer from './components/treeCluster/ClusterContainer';
 
         
 /**
@@ -17,8 +19,53 @@ function App() {
 
   // --- VARIABLES ---
 
+  // Récupération de la liste des hiérarchies
+  const dropdownHierarchyValues = useSelector(state => state.hierarchyInteraction.hierarchies);
+  
+  // Récupération de l'index de sélectionné pour une hiérarchie
+  const selectedHierarchy = useSelector(state => state.hierarchyInteraction.selectedHierarchy);
+
   // Récupération des données du store
   const dispatch = useDispatch();
+    
+  // Gestion de la sélection d'un item
+  const [hierarchyComponent, setHierarchyComponent] = useState(<></>);
+
+
+  // --- FONCTION ---
+
+  /**
+   * Chargement d'une hiérarchie en fonction de la sélection du dropdown
+   * @param {*} nameHierarchy Nom de la hiérarchie
+   * @returns Renvoie un composant représentant le graphe
+   */
+  const loadHierarchy = (nameHierarchy) => {
+    switch (nameHierarchy) {
+      case "tree":
+        return <TreeContainer></TreeContainer>
+        break;
+
+      case "cluster":
+        return <ClusterContainer></ClusterContainer>
+        break;
+
+      case "partition":
+        return <></>
+        break;
+
+      case "pack":
+        return <></>
+        break;
+
+      case "treemap":
+        return <></>
+        break;
+    
+      default:
+        return <></>
+        break;
+    }
+  }
 
   
   // --- USE-EFFECT---
@@ -39,6 +86,13 @@ function App() {
       dispatch(getDataSet());
   },[dispatch])
 
+  /**
+   * useEffect mettant automatiquement à jour le graphe lorsque le joueur choisit de changer de visualisation
+   */
+  useEffect(()=>{
+      setHierarchyComponent(loadHierarchy(dropdownHierarchyValues[selectedHierarchy]));
+  },[dropdownHierarchyValues, selectedHierarchy])
+
 
   // --- COMPOSANT---
 
@@ -56,7 +110,7 @@ function App() {
 
       <div id={"MultiviewContainer"} className={"row"}>
         <ScatterplotContainer/>
-        <ScatterplotContainer/>
+        {hierarchyComponent}
       </div>
     </div>
   );

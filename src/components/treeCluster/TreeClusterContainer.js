@@ -1,16 +1,16 @@
-import './Scatterplot.css'
+import './TreeCluster.css'
 import { useEffect, useRef } from 'react';
 import {useSelector, useDispatch} from 'react-redux'
-import ScatterplotD3 from './Scatterplot-d3';
+import TreeClusterD3 from './TreeCluster-d3';
 import { setSelectedItems } from '../../redux/ItemInteractionSlice'
 
 
 /**
- * Composant permettant d'afficher un nuage de point
- * @param {*} param0 Objet {string, string} indiquant les données sur l'axe des x et sur l'axe des y / Attention, il faut que les labels correspondent à une colonne du tableau de données
- * @returns Renvoie un nuage de point
+ * Composant permettant d'afficher un arbre
+ * @param {*} param0 Objet {d3.tree/cluster} avec le type d'arbre à ajouter
+ * @returns Renvoie un arbre
  */
-function ScatterplotContainer({xAttributeName, yAttributeName}){
+function TreeClusterContainer({tree}){
 
     // --- VARIABLES ---
 
@@ -18,13 +18,22 @@ function ScatterplotContainer({xAttributeName, yAttributeName}){
      * Variable d'écoute sur le changement des données
      * Elle permet de mettre à jour le graphe dès que les données sont modifiées
      */
-    const scatterplotData = useSelector(state =>state.dataSet)
+    const treeData = useSelector(state =>state.dataSet);
 
     /**
      * Variable d'écoute sur la sélection
      * Elle permet de mettre à jour le graphe dès que des données sont sélectionnées
      */
     const selectedItems = useSelector(state => state.itemInteraction.selectedItems);
+
+    // Récupération de la liste des labels depuis le store
+    const dropdownLabelValues = useSelector(state => state.labelInteraction.labels);
+    
+    // Récupération de l'index du label x
+    const xLabelValue = useSelector(state => state.labelInteraction.xLabel);
+    
+    // Récupération de l'index du label y
+    const yLabelValue = useSelector(state => state.labelInteraction.yLabel);
 
     // Récupération des données du store
     const dispatch = useDispatch();
@@ -34,7 +43,7 @@ function ScatterplotContainer({xAttributeName, yAttributeName}){
      * Le but de ces variables est de pouvoir manipuler des objets à la place de devoir les recréer à chaque modification
      */
     const divContainerRef = useRef(null);
-    const scatterplotD3Ref = useRef(null)
+    const treeD3Ref = useRef(null);
 
 
 
@@ -64,7 +73,7 @@ function ScatterplotContainer({xAttributeName, yAttributeName}){
      * On utilise cette fonction principalement pour le debug
      */
     useEffect(() => {
-        console.log("ScatterplotContainer useEffect (called each time matrix re-renders)");
+        console.log("TreeClusterContainer useEffect (called each time matrix re-renders)");
     });
 
 
@@ -74,23 +83,23 @@ function ScatterplotContainer({xAttributeName, yAttributeName}){
      * On définit également une fonction nettoyage pour éviter les fuites de mémoires
      */
     useEffect(() => {
-        console.log("ScatterplotContainer useEffect [] called once the component did mount");
+        console.log("TreeClusterContainer useEffect [] called once the component did mount");
 
         // Création d'un nuage de point vierge
-        const scatterplotD3 = new ScatterplotD3(divContainerRef.current);
-        scatterplotD3.create({size:getChartSize()});
+        const treeD3 = new TreeClusterD3(divContainerRef.current, tree);
+        treeD3.create({size:getChartSize()});
 
         // Mise à jour de la référence pointant vers le graphe
-        scatterplotD3Ref.current = scatterplotD3;
+        treeD3Ref.current = treeD3;
 
         /**
          * Fonction de nettoyage
          * Cette fonction supprime le graphe lorsqu'il disparait de l'écran
          */
         return () => {
-            console.log("ScatterplotContainer useEffect [] return function, called when the component did unmount...");
-            const scatterplotD3 = scatterplotD3Ref.current;
-            scatterplotD3.clear()
+            console.log("TreeClusterContainer useEffect [] return function, called when the component did unmount...");
+            const treeD3 = treeD3Ref.current;
+            treeD3.clear()
         }
     },[]);
 
@@ -100,32 +109,24 @@ function ScatterplotContainer({xAttributeName, yAttributeName}){
      * On instancie ici les évènements : clicks, hover et leave, puis on affiche le graphe
      */
     useEffect(() => {
-        console.log("ScatterplotContainer useEffect with dependency [scatterplotData, xAttribute, yAttribute, scatterplotControllerMethods], called each time scatterplotData changes...");
+        console.log("TreeClusterContainer useEffect with dependency [treeData, xAttribute, yAttribute, treeControllerMethods], called each time treeData changes...");
 
         /**
          * Evènement au clic - Mise à jour de la valeur sélectionnée (ref)
-         * @param {*} itemData Donnée du graphe cliquée
+         * @param {*} itemsData Donnée du graphe cliquée
          */
-        const handleOnClick = (itemData) => {
-            dispatch(setSelectedItems([itemData]))
-        }
-        /**
-         * Evènement au survol
-         * @param {*} itemsData  Données sélectionnées
-         */
-        const handleSelection = (itemsData) => {
-            dispatch(setSelectedItems(itemsData));
+        const handleOnClick = (itemsData) => {
+            dispatch(setSelectedItems(itemsData))
         }
 
         // Récupération de l'objet graphe via la référence
-        const scatterplotD3 = scatterplotD3Ref.current;
+        const treeD3 = treeD3Ref.current;
 
         // Mise à jour du graphe
-        scatterplotD3.renderScatterplot(scatterplotData, xAttributeName, yAttributeName, {
-            handleOnClick,
-            handleSelection
+        treeD3.renderTreeCluster(treeData, dropdownLabelValues[xLabelValue], dropdownLabelValues[yLabelValue], {
+            handleOnClick
         });
-    },[scatterplotData, xAttributeName, yAttributeName, dispatch]);
+    },[treeData, xLabelValue, yLabelValue, dropdownLabelValues, dispatch]);
 
 
     /**
@@ -133,8 +134,8 @@ function ScatterplotContainer({xAttributeName, yAttributeName}){
      * Ici, on met en évidence la donnée lorsqu'on la sélectionne
      */
     useEffect(() => {
-        const scatterplotD3 = scatterplotD3Ref.current;
-        scatterplotD3.highlightSelectedItems(selectedItems);
+        const treeD3 = treeD3Ref.current;
+        treeD3.highlightSelectedItems(selectedItems);
     },[selectedItems]);
 
 
@@ -143,8 +144,8 @@ function ScatterplotContainer({xAttributeName, yAttributeName}){
 
     // Affichage du graphe et de son conteneur
     return(
-        <div ref={divContainerRef} className="treeDivContainer col2"></div>
+        <div ref={divContainerRef} className="treeClusterDivContainer col2"></div>
     )
 }
 
-export default ScatterplotContainer;
+export default TreeClusterContainer;

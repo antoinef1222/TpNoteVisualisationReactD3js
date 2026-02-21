@@ -22,10 +22,16 @@ export class MapperHierarchy {
                 const id = String(currentValue["state"]);
 
                 if (map.hasOwnProperty(id)) {
-                    map[id].push(currentValue);
+                    map[id].push({
+                        name: currentValue["communityname"],
+                        ...currentValue
+                    });
                 }
                 else {
-                    map[id] = [currentValue];
+                    map[id] = [{
+                        name: currentValue["communityname"],
+                        ...currentValue
+                    }];
                 }
             }
             return map;

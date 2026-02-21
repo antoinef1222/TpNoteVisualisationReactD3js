@@ -3,8 +3,9 @@ import { useEffect, useRef } from 'react';
 import {useSelector, useDispatch} from 'react-redux'
 import ScatterplotD3 from './Scatterplot-d3';
 import { setSelectedItems } from '../../redux/ItemInteractionSlice'
+import { hierarchy } from "d3-hierarchy";
+import * as d3 from 'd3'
 import { MapperHierarchy } from '../../utils/MapperHierarchy';
-
 
 /**
  * Composant permettant d'afficher un nuage de point
@@ -20,7 +21,6 @@ function ScatterplotContainer(){
      * Elle permet de mettre à jour le graphe dès que les données sont modifiées
      */
     const scatterplotData = useSelector(state => state.dataSet);
-    console.log(MapperHierarchy.mapDataToHierarchy(scatterplotData));
 
     /**
      * Variable d'écoute sur la sélection
